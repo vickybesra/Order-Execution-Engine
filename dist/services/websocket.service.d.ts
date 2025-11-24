@@ -4,8 +4,9 @@
  * Manages WebSocket connections and emits real-time status updates to clients.
  * Maps orderId to WebSocket connections for targeted status updates.
  */
-import { WebSocket } from '@fastify/websocket';
+import type { SocketStream } from '@fastify/websocket';
 import { StatusUpdate } from '../types/order';
+type WebSocket = SocketStream['socket'];
 /**
  * WebSocket Status Emitter Service
  */
@@ -53,4 +54,5 @@ export declare class WebSocketService {
     closeAllConnections(): void;
 }
 export declare const webSocketService: WebSocketService;
+export {};
 //# sourceMappingURL=websocket.service.d.ts.map

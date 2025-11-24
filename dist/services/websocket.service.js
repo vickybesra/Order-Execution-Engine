@@ -1,13 +1,6 @@
 "use strict";
-/**
- * WebSocket Service
- *
- * Manages WebSocket connections and emits real-time status updates to clients.
- * Maps orderId to WebSocket connections for targeted status updates.
- */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.webSocketService = exports.WebSocketService = void 0;
-const websocket_1 = require("@fastify/websocket");
 /**
  * WebSocket Status Emitter Service
  */
@@ -95,7 +88,7 @@ class WebSocketService {
                 return;
             }
             try {
-                if (connection.socket.readyState === websocket_1.WebSocket.OPEN) {
+                if (connection.socket.readyState === connection.socket.OPEN) {
                     connection.socket.send(message);
                     sentCount++;
                 }

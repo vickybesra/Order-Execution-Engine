@@ -4,9 +4,11 @@
  * Manages WebSocket connections and emits real-time status updates to clients.
  * Maps orderId to WebSocket connections for targeted status updates.
  */
-
-import { WebSocket } from '@fastify/websocket';
+import type { SocketStream } from '@fastify/websocket';
 import { StatusUpdate } from '../types/order';
+
+//Extract socket type from SocketStream
+type WebSocket = SocketStream['socket'];
 
 /**
  * WebSocket connection with metadata
@@ -120,7 +122,7 @@ export class WebSocketService {
       }
 
       try {
-        if (connection.socket.readyState === WebSocket.OPEN) {
+        if (connection.socket.readyState === connection.socket.OPEN) {
           connection.socket.send(message);
           sentCount++;
         } else {
