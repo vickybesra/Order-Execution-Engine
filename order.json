@@ -1,0 +1,6 @@
+{
+    "tokenIn": "SOL",
+    "tokenOut": "USDC",
+    "amount": 10,
+    "orderType": "MARKET"
+  }

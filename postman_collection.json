@@ -1,0 +1,109 @@
+{
+  "info": {
+    "name": "Order Execution Engine API",
+    "description": "API collection for testing the Order Execution Engine",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Submit Order",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 202) {",
+              "    const response = pm.response.json();",
+              "    pm.environment.set('orderId', response.orderId);",
+              "    console.log('Order ID:', response.orderId);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tokenIn\": \"SOL\",\n  \"tokenOut\": \"USDC\",\n  \"amount\": 10,\n  \"orderType\": \"MARKET\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/orders/execute",
+          "host": ["{{base_url}}"],
+          "path": ["api", "orders", "execute"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Submit Order - Invalid Request",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"tokenIn\": \"\",\n  \"tokenOut\": \"USDC\",\n  \"amount\": -10,\n  \"orderType\": \"INVALID\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/orders/execute",
+          "host": ["{{base_url}}"],
+          "path": ["api", "orders", "execute"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "WebSocket Status Stream",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "ws://{{base_url}}/api/orders/{{orderId}}/status",
+          "protocol": "ws",
+          "host": ["{{base_url}}"],
+          "path": ["api", "orders", "{{orderId}}", "status"]
+        },
+        "description": "Connect via WebSocket to receive real-time status updates. Replace {{orderId}} with the orderId from the Submit Order response."
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
+
