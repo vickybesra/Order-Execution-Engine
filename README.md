@@ -124,7 +124,6 @@ npm run test:watch
 # Run tests with coverage
 npm run test:coverage
 
-**31+ tests passing**
 ```
 See [TESTING.md](./TESTING.md) for detailed testing instructions.
 
@@ -139,6 +138,31 @@ See [TESTING.md](./TESTING.md) for detailed testing instructions.
 - ✅ Queue and retry logic tests
 - ✅ WebSocket lifecycle tests
 - ✅ Order persistence tests
+
+## Integration Test Scenarios
+
+### Scenario 1: Complete Order Lifecycle
+
+1. Submit order via POST
+2. Connect WebSocket immediately
+3. Observe all status updates in sequence
+4. Verify order appears in PostgreSQL
+5. Verify order removed from Redis active set
+
+### Scenario 2: Multiple Clients, Same Order
+
+1. Submit one order
+2. Connect multiple WebSocket clients with same orderId
+3. Verify all clients receive status updates
+4. Verify order processed only once
+
+### Scenario 3: Error Handling
+
+1. Submit invalid order (should fail validation)
+2. Submit valid order
+3. Simulate network failure (if possible)
+4. Verify retry logic (check logs)
+5. Verify final failure persisted
 
 ## API Endpoints
 
@@ -206,6 +230,67 @@ Health check endpoint.
 }
 ```
 <img width="1275" height="778" alt="Screenshot 2025-11-25 at 2 02 36 AM" src="https://github.com/user-attachments/assets/2bf836bc-b1d8-413b-8ea5-6a375de596ff" />
+
+### Submit Invalid Order (Validation Test)
+
+```bash
+curl -X POST http://localhost:3000/api/orders/execute \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tokenIn": "",
+    "tokenOut": "USDC",
+    "amount": -10,
+    "orderType": "INVALID"
+  }'
+```
+
+**Response:**
+```json
+{
+    "error": "Validation failed",
+    "details": [
+        {
+            "code": "too_small",
+            "minimum": 1,
+            "type": "string",
+            "inclusive": true,
+            "exact": false,
+            "message": "tokenIn is required",
+            "path": [
+                "tokenIn"
+            ]
+        },
+        {
+            "code": "too_small",
+            "minimum": 0,
+            "type": "number",
+            "inclusive": false,
+            "exact": false,
+            "message": "amount must be positive",
+            "path": [
+                "amount"
+            ]
+        },
+        {
+            "received": "INVALID",
+            "code": "invalid_enum_value",
+            "options": [
+                "MARKET",
+                "LIMIT",
+                "SNIPER"
+            ],
+            "path": [
+                "orderType"
+            ],
+            "message": "orderType must be MARKET, LIMIT, or SNIPER"
+        }
+    ]
+}
+```
+
+**Status Code:** `400 Bad Request`
+
+<img width="1275" height="778" alt="Screenshot 2025-11-25 at 2 03 11 AM" src="https://github.com/user-attachments/assets/6949f6ca-342c-40ae-aff3-ad2a79c954f7" />
 
 ## Phase 3: Order Management and Real-Time Status
 
@@ -319,6 +404,56 @@ interface RoutingDecision {
 <img width="1133" height="639" alt="Screenshot 2025-11-25 at 3 03 19 AM" src="https://github.com/user-attachments/assets/892abfa8-b14e-4218-af3c-eacbd659d22c" />
 <img width="838" height="773" alt="Screenshot 2025-11-25 at 3 03 00 AM" src="https://github.com/user-attachments/assets/d8979c47-6589-431c-baa3-50dcdb02bd09" />
 
+### Concurrent Order Processing
+
+```bash
+# Submit 10 orders simultaneously
+for i in {1..10}; do
+  curl -X POST http://localhost:3000/api/orders/execute \
+    -H "Content-Type: application/json" \
+    -d "{\"tokenIn\":\"SOL\",\"tokenOut\":\"USDC\",\"amount\":$i,\"orderType\":\"MARKET\"}" &
+done
+wait
+
+echo "All orders submitted"
+```
+<img width="625" height="558" alt="Screenshot 2025-11-25 at 3 34 23 AM" src="https://github.com/user-attachments/assets/3adee567-51f4-48f2-993d-bd239cd4a2d0" />
+
+<img width="609" height="799" alt="Screenshot 2025-11-25 at 3 35 26 AM" src="https://github.com/user-attachments/assets/0f0beb29-22de-4aa9-9d5f-15aba903b412" />
+
+<img width="609" height="812" alt="Screenshot 2025-11-25 at 3 35 54 AM" src="https://github.com/user-attachments/assets/45e96fcd-28ed-43d5-bcab-a8382b336895" />
+
+<img width="609" height="812" alt="Screenshot 2025-11-25 at 3 36 26 AM" src="https://github.com/user-attachments/assets/02c0b5de-7882-4635-822c-4d1d54afd0c0" />
+
+<img width="609" height="812" alt="Screenshot 2025-11-25 at 3 36 39 AM" src="https://github.com/user-attachments/assets/3a7fbbb8-812a-4fe5-9a27-5edfb7fcd668" />
+
+<img width="609" height="812" alt="Screenshot 2025-11-25 at 3 37 23 AM" src="https://github.com/user-attachments/assets/ccf80ee3-f1b9-4236-a9ea-0bce55382922" />
+
+## Performance Testing
+
+### Load Test
+
+```bash
+# Install Apache Bench
+brew install httpd
+
+
+# Test 100 requests, 10 concurrent
+# Note: Use 127.0.0.1 instead of localhost on macOS for ApacheBench
+ab -n 100 -c 10 -p order.json -T application/json \
+  http://127.0.0.1:3000/api/orders/execute
+```
+
+Create `order.json`:
+```json
+{
+  "tokenIn": "SOL",
+  "tokenOut": "USDC",
+  "amount": 10,
+  "orderType": "MARKET"
+}
+```
+<img width="445" height="610" alt="Screenshot 2025-11-25 at 3 43 09 AM" src="https://github.com/user-attachments/assets/39231887-4652-4031-86dd-d52a881a89d1" />
 
 ## Architecture
 
