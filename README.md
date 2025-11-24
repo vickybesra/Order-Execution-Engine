@@ -94,31 +94,6 @@ The same engine structure can be extended to support Limit and Sniper orders by:
 npm install
 ```
 
-### Environment Variables
-
-Create a `.env` file in the root directory:
-
-```env
-# Server Configuration
-PORT=3000
-HOST=0.0.0.0
-
-# Redis Configuration
-REDIS_HOST=localhost
-REDIS_PORT=6379
-REDIS_PASSWORD=
-REDIS_DB=0
-BULLMQ_REDIS_DB=1
-
-# PostgreSQL Configuration
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_DB=order_engine
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_MAX_POOL=20
-```
-
 ### Build
 
 ```bash
@@ -148,9 +123,15 @@ npm run test:watch
 
 # Run tests with coverage
 npm run test:coverage
-```
 
+**31+ tests passing**
+```
 See [TESTING.md](./TESTING.md) for detailed testing instructions.
+
+## Snapshots
+<img width="680" height="765" alt="Screenshot 2025-11-25 at 1 51 58 AM" src="https://github.com/user-attachments/assets/c1e66697-2684-4f6c-809b-eecc792c1b32" />
+<img width="691" height="717" alt="Screenshot 2025-11-25 at 1 52 19 AM" src="https://github.com/user-attachments/assets/78162d6d-c1d9-4311-a61f-7f2628ee3e9e" />
+<img width="937" height="128" alt="Screenshot 2025-11-25 at 1 52 34 AM" src="https://github.com/user-attachments/assets/8f668ac8-257e-4d71-95b0-469f726c8a88" />
 
 **Test Coverage:**
 - ✅ 30+ unit and integration tests
@@ -161,6 +142,7 @@ See [TESTING.md](./TESTING.md) for detailed testing instructions.
 
 ## API Endpoints
 
+**Status Code:** `200 OK`
 ### POST /api/orders/execute
 
 Submit a new order for execution.
@@ -178,11 +160,12 @@ Submit a new order for execution.
 **Response (202 Accepted):**
 ```json
 {
-  "orderId": "order_1234567890_abc123",
+  "orderId": "order_1764016366447_530076a5",
   "status": "pending",
   "message": "Order submitted successfully. Connect via WebSocket for status updates."
 }
 ```
+<img width="1275" height="778" alt="Screenshot 2025-11-25 at 2 02 57 AM" src="https://github.com/user-attachments/assets/4c056103-521e-4b9f-8eda-c5e162525034" />
 
 ### WebSocket /api/orders/:orderId/status
 
@@ -190,21 +173,19 @@ Connect via WebSocket to receive real-time status updates for an order.
 
 **Connection:**
 ```javascript
-const ws = new WebSocket('ws://localhost:3000/api/orders/order_1234567890_abc123/status');
+const ws = new WebSocket('ws://localhost:3000/api/orders/order_1764016366447_530076a5/status');
 ```
 
 **Status Update Messages:**
 ```json
 {
-  "orderId": "order_1234567890_abc123",
-  "status": "routing",
-  "timestamp": 1234567890123,
-  "message": "Fetching quotes from DEXs...",
-  "data": {
-    "routingDecision": { ... }
-  }
+    "type": "connected",
+    "orderId": "order_1764016366447_530076a5",
+    "timestamp": 1764018789809,
+    "message": "Connected to order status stream"
 }
 ```
+<img width="1275" height="778" alt="Screenshot 2025-11-25 at 2 05 13 AM" src="https://github.com/user-attachments/assets/c4b436d3-0eeb-4b73-aeaf-e0db79be3e2e" />
 
 **Status Flow:**
 1. `pending` - Order received, awaiting processing
@@ -221,9 +202,10 @@ Health check endpoint.
 ```json
 {
   "status": "ok",
-  "timestamp": 1234567890123
+  "timestamp": 1764016299230
 }
 ```
+<img width="1275" height="778" alt="Screenshot 2025-11-25 at 2 02 36 AM" src="https://github.com/user-attachments/assets/2bf836bc-b1d8-413b-8ea5-6a375de596ff" />
 
 ## Phase 3: Order Management and Real-Time Status
 
@@ -273,6 +255,7 @@ interface OrderRequest {
   orderType: OrderType; // Order type ('MARKET', 'LIMIT', or 'SNIPER')
 }
 ```
+<img width="1358" height="778" alt="Screenshot 2025-11-25 at 1 54 00 AM" src="https://github.com/user-attachments/assets/933c50b9-1c89-4298-9356-9dce01e18515" />
 
 ### ActiveOrder Interface
 
@@ -305,7 +288,7 @@ interface DexQuote {
   fee: number;              // Fee amount in tokenIn
   netPrice: number;         // Effective exchange rate (amountOut / amountIn)
   amountOut: number;        // Amount of tokenOut received
-  liquidity?: number;       // Available liquidity (optional)
+  liquidity?: number;       // Available liquidity
 }
 ```
 
@@ -322,6 +305,20 @@ interface RoutingDecision {
   routingTimestamp: number;  // When routing decision was made
 }
 ```
+### Snapshots
+
+## type1
+<img width="1128" height="635" alt="Screenshot 2025-11-25 at 2 55 39 AM" src="https://github.com/user-attachments/assets/b68dfa22-92ec-4fbc-a6e2-49d74652f13d" />
+<img width="832" height="609" alt="Screenshot 2025-11-25 at 2 55 22 AM" src="https://github.com/user-attachments/assets/7460b2bf-b0e5-4b0e-99a2-2106650387b2" />
+
+## type2
+<img width="1142" height="643" alt="Screenshot 2025-11-25 at 3 01 34 AM" src="https://github.com/user-attachments/assets/4d3d4802-e78d-438f-ac35-a4a864c66b48" />
+<img width="837" height="594" alt="Screenshot 2025-11-25 at 3 01 15 AM" src="https://github.com/user-attachments/assets/8dc0987b-b271-4848-98b2-dde87b79c349" />
+
+## type3
+<img width="1133" height="639" alt="Screenshot 2025-11-25 at 3 03 19 AM" src="https://github.com/user-attachments/assets/892abfa8-b14e-4218-af3c-eacbd659d22c" />
+<img width="838" height="773" alt="Screenshot 2025-11-25 at 3 03 00 AM" src="https://github.com/user-attachments/assets/d8979c47-6589-431c-baa3-50dcdb02bd09" />
+
 
 ## Architecture
 
