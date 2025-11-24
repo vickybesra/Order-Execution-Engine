@@ -125,7 +125,6 @@ npm run test:watch
 npm run test:coverage
 
 ```
-See [TESTING.md](./TESTING.md) for detailed testing instructions.
 
 ## Snapshots
 <img width="680" height="765" alt="Screenshot 2025-11-25 at 1 51 58 AM" src="https://github.com/user-attachments/assets/c1e66697-2684-4f6c-809b-eecc792c1b32" />
@@ -133,36 +132,41 @@ See [TESTING.md](./TESTING.md) for detailed testing instructions.
 <img width="937" height="128" alt="Screenshot 2025-11-25 at 1 52 34 AM" src="https://github.com/user-attachments/assets/8f668ac8-257e-4d71-95b0-469f726c8a88" />
 
 **Test Coverage:**
+
+The test suite includes:
+1. **MockDexRouter Tests** (16 tests)
+   - Quote fetching from Raydium and Meteora
+   - Best quote selection logic
+   - Price comparison
+   - Swap execution
+   - Transaction hash generation
+
+2. **Order Service Tests** (5 tests)
+   - Order ID generation
+   - Order creation from request
+   - Redis storage and retrieval
+   - Status updates
+
+3. **Queue Service Tests** (3 tests)
+   - Queue configuration
+   - Retry attempts configuration
+   - Exponential back-off configuration
+
+4. **Worker Service Tests** (2 tests)
+   - Retry logic on transient errors
+   - Final failure handling
+   - Status update emission
+
+5. **Route Tests** (4 tests)
+   - Order request validation
+   - Queue integration
+   - WebSocket service integration
+
 - ✅ 30+ unit and integration tests
 - ✅ DEX routing logic tests (16 tests)
 - ✅ Queue and retry logic tests
 - ✅ WebSocket lifecycle tests
 - ✅ Order persistence tests
-
-## Integration Test Scenarios
-
-### Scenario 1: Complete Order Lifecycle
-
-1. Submit order via POST
-2. Connect WebSocket immediately
-3. Observe all status updates in sequence
-4. Verify order appears in PostgreSQL
-5. Verify order removed from Redis active set
-
-### Scenario 2: Multiple Clients, Same Order
-
-1. Submit one order
-2. Connect multiple WebSocket clients with same orderId
-3. Verify all clients receive status updates
-4. Verify order processed only once
-
-### Scenario 3: Error Handling
-
-1. Submit invalid order (should fail validation)
-2. Submit valid order
-3. Simulate network failure (if possible)
-4. Verify retry logic (check logs)
-5. Verify final failure persisted
 
 ## API Endpoints
 
@@ -293,6 +297,29 @@ curl -X POST http://localhost:3000/api/orders/execute \
 <img width="1275" height="778" alt="Screenshot 2025-11-25 at 2 03 11 AM" src="https://github.com/user-attachments/assets/6949f6ca-342c-40ae-aff3-ad2a79c954f7" />
 
 ## Phase 3: Order Management and Real-Time Status
+
+### Scenario 1: Complete Order Lifecycle
+
+1. Submit order via POST
+2. Connect WebSocket immediately
+3. Observe all status updates in sequence
+4. Verify order appears in PostgreSQL
+5. Verify order removed from Redis active set
+
+### Scenario 2: Multiple Clients, Same Order
+
+1. Submit one order
+2. Connect multiple WebSocket clients with same orderId
+3. Verify all clients receive status updates
+4. Verify order processed only once
+
+### Scenario 3: Error Handling
+
+1. Submit invalid order (should fail validation)
+2. Submit valid order
+3. Simulate network failure (if possible)
+4. Verify retry logic (check logs)
+5. Verify final failure persisted
 
 ### Architecture
 
