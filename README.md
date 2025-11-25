@@ -162,11 +162,11 @@ The test suite includes:
    - Queue integration
    - WebSocket service integration
 
-- ✅ 30+ unit and integration tests
-- ✅ DEX routing logic tests (16 tests)
-- ✅ Queue and retry logic tests
-- ✅ WebSocket lifecycle tests
-- ✅ Order persistence tests
+-  30+ unit and integration tests
+-  DEX routing logic tests (16 tests)
+-  Queue and retry logic tests
+-  WebSocket lifecycle tests
+-  Order persistence tests
 
 ## API Endpoints
 
@@ -524,19 +524,19 @@ The `MockDexRouter` class simulates interactions with decentralized exchanges:
 ### Testing
 
 Comprehensive unit tests verify:
-- ✅ Quote fetching from both DEXs
-- ✅ Concurrent quote fetching performance
-- ✅ Correct selection of better-priced quote
-- ✅ Liquidity-based selection when prices are equal
-- ✅ Swap execution with transaction hash generation
-- ✅ Unique transaction hash generation
-- ✅ Edge cases and price comparison logic
+-  Quote fetching from both DEXs
+-  Concurrent quote fetching performance
+-  Correct selection of better-priced quote
+-  Liquidity-based selection when prices are equal
+-  Swap execution with transaction hash generation
+-  Unique transaction hash generation
+-  Edge cases and price comparison logic
 
-**Test Results:** 16/16 tests passing ✅
+**Test Results:** 16/16 tests passing 
 
 ## Development Status
 
-✅ Phase 1 Complete:
+Phase 1 Complete:
 - [x] Project setup with TypeScript
 - [x] Dependency installation and configuration
 - [x] Redis connection service with health checks
@@ -545,7 +545,7 @@ Comprehensive unit tests verify:
 - [x] Configuration management
 - [x] Order type documentation
 
-✅ Phase 2 Complete:
+Phase 2 Complete:
 - [x] MockDexRouter class implementation
 - [x] Quote fetching simulation (Raydium & Meteora)
 - [x] Network delay simulation (~200ms)
@@ -558,7 +558,7 @@ Comprehensive unit tests verify:
 - [x] Updated order types with routing decision data
 - [x] Comprehensive unit tests (16 tests, all passing)
 
-✅ Phase 3 Complete:
+Phase 3 Complete:
 - [x] HTTP endpoint POST /api/orders/execute with validation
 - [x] WebSocket endpoint /api/orders/:orderId/status for real-time updates
 - [x] Order submission flow with orderId generation
@@ -570,7 +570,7 @@ Comprehensive unit tests verify:
 - [x] Database schema initialization
 - [x] Graceful shutdown handling
 
-✅ Phase 4 Complete:
+Phase 4 Complete:
 - [x] BullMQ worker configured for 10 concurrent jobs
 - [x] Processing rate configured for 100 orders/minute
 - [x] Exponential back-off retry logic (max 3 attempts)
